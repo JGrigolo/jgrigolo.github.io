@@ -36,27 +36,27 @@ window.addEventListener("load", () => {
         trigger: ".two",
         start: "+=1",
         end: "+=100%",
-        scrub: 1,
+        scrub: 3,
         pin: true,
         markers: false,
         
       }
     })
-    .to("#text1", { opacity: 1, duration: 1, onStart: () => document.getElementById("text1").textContent = escolherFrase("text1") })
+    .to("#text1", { opacity: 1, duration: 1, onStart: () => document.getElementById("text1").textContent = chooseWords("text1") })
     .to("#text1", { opacity: 0, duration: 1 })
-    .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = escolherFrase("text2") })
+    .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = chooseWords("text2") })
     .to("#text2", { opacity: 0, duration: 1 })
-    .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = escolherFrase("text3") })
+    .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = chooseWords("text3") })
 });
 
-const frases = {
+const words = {
   text1: ["arte"],
-  text2: ["é", "significa", "precisa", "assume", "pleiteia", "deseja", "disputa", "almeja", "vislumbra" ],
-  text3: ["desconforto", "questionar", "resignificar", "reconstruir", "destruir", "significado"],
+  text2: ["é", "significa", "precisa", "assume", "reinvidica", "exige", "defende", "clama", "contesta",  "deseja", "disputa", "almeja", "contempla", "observa", "preve", "representa", "implica"],
+  text3: ["desconforto", "questionar", "resignificar", "reconstruir", "destruir", "significado", "inquietude", "recriar", "criar", "reorganizar", "reparar", "reconstituir", "instituir"],
 };
 
 
-function escolherFrase(partId) {
-  const frasesPart = frases[partId];
-  return frasesPart[Math.floor(Math.random() * frasesPart.length)];
+function chooseWords(partId) {
+  const wordPart = words[partId];
+  return wordPart[Math.floor(Math.random() * wordPart.length)];
 }
