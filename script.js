@@ -47,7 +47,10 @@ window.addEventListener("load", () => {
     .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = chooseWords("text2") })
     .to("#text2", { opacity: 0, duration: 1 })
     .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = chooseWords("text3") })
-    .to("#text3", { opacity: 0, duration: 2 })
+    .to("#text3", { opacity: 0, duration: 1 })
+    .to("#text4", { opacity: 1, duration: 1, onStart: () => document.getElementById("text4").textContent = chooseWords("text4") })
+    .to("#text4", { opacity: 0, duration: 2 })
+
 
 });
 
@@ -66,11 +69,20 @@ const words = {
           "ressalta", "revela", "sustenta", "tece", "testemunha", "toma", "traduz", "transforma", "une", "usa", "valida",
           "valoriza", "verifica", "vigia", "vislumbra", "vivencia", "vota", "zela", "anuncia", "articula", "estipula",
           "descreve", "compila"],
-  text3: ["desconforto", "questionar", "resignificar", "reconstruir", "destruir", "significado", "inquietude", "recriar",
+  text3: ["vontade de", "desejo de", "necessidade de", "ânsia de",
+          "ambição de", "intenção de", "inclinação para", "impulso de",
+          "determinação para", "motivo para", "propósito de", "empenho em",
+          "impulso para", "foco em", "objetivo de", "propensão para",
+          "interesse em", "predisposição para", "entusiasmo por",
+          "energia para", "fervor por", "paixão por", "anseio por",
+          "aspiração a", "meta de", "esforço para", "ímpeto de",
+          "motivação para", "disposição para", "dedicação a", "desejo por",
+          "volição de", "cobiça por", "gana de", "perspectiva de"],
+  text4: ["desconforto", "questionar", "resignificar", "reconstruir", "destruir", "significado", "inquietude", "recriar",
           "criar", "reorganizar", "reparar", "reconstituir", "instituir", "adaptar", "alterar", "analisar", "articular",
           "assegurar", "assumir", "atualizar", "compreender", "contemplar", "definir", "designar", "determinar", "devolver",
           "dividir", "efetuar", "evidenciar", "experimentar", "explorar", "facilitar", "fomentar", "formar", "fundar", "gerar",
-          "implementer", "iniciar", "instaurar", "integrar", "interagir", "interpretar", "intervir", "inverter", "justificar",
+          "implementar", "iniciar", "instaurar", "integrar", "interagir", "interpretar", "intervir", "inverter", "justificar",
           "manter", "modificar", "mobilizar", "motivar", "narrar", "negociar", "observar", "ocasionar", "organizar", "otimizar",
           "parar", "planear", "proporcionar", "propor", "quebrar", "reagir", "realizar", "reavaliar", "reconhecer", "regenerar",
           "relatar", "remediar", "remover", "renovar", "reorganizar", "reparar", "representar", "resgatar", "resistir", "rever",
