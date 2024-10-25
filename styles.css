@@ -41,6 +41,12 @@
     font-family: "Silkscreen";
     font-size: 5vh;
   }
+
+  .text_head {
+    background-color: black;
+    color:cornsilk;
+    font-size: 2vh;
+  }
   
   .image-container {
     width: 100%;

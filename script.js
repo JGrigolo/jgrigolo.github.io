@@ -46,6 +46,7 @@ window.addEventListener("load", () => {
     .to("#text1", { opacity: 0, duration: 1 })
     .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = chooseWords("text2") })
     .to("#text2", { opacity: 0, duration: 1 })
+    .to("#text-title", { opacity: 1, duration: 1, onStart: () => document.getElementById("text-title").textContent = "'Máquina Taotológica' - J. Grigolo / 2024" })
     .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = chooseWords("text3") })
     .to("#text3", { opacity: 0, duration: 1 })
     .to("#text4", { opacity: 1, duration: 1, onStart: () => document.getElementById("text4").textContent = chooseWords("text4") })
