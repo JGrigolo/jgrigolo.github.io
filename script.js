@@ -38,7 +38,7 @@ window.addEventListener("load", () => {
         end: "+=100%",
         scrub: 1,
         pin: true,
-        markers: true, // Temporariamente ativado para depuração
+        markers: false,
         
       }
     })
