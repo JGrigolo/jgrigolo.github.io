@@ -52,7 +52,7 @@ window.addEventListener("load", () => {
 });
 
 const frases = {
-  text1: ["arte", "criação", "ser crítico"],
+  text1: ["arte", "criação", "crítica"],
   text2: ["traz", "possui", "carrega"],
   text3: ["muito", "intenso", "profundo"],
   text4: ["desconforto", "questionamento", "desafio"]
