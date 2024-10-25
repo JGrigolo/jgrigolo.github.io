@@ -47,6 +47,7 @@ window.addEventListener("load", () => {
     .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = chooseWords("text2") })
     .to("#text2", { opacity: 0, duration: 1 })
     .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = chooseWords("text3") })
+    .to("#text3", { opacity: 0, duration: 2 })
 });
 
 const words = {
