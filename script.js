@@ -38,7 +38,7 @@ window.addEventListener("load", () => {
         end: "+=100%",
         scrub: 1,
         pin: true,
-        markers: false,
+        markers: true, // Temporariamente ativado para depuração
         
       }
     })
@@ -47,15 +47,12 @@ window.addEventListener("load", () => {
     .to("#text2", { opacity: 1, duration: 1, onStart: () => document.getElementById("text2").textContent = escolherFrase("text2") })
     .to("#text2", { opacity: 0, duration: 1 })
     .to("#text3", { opacity: 1, duration: 1, onStart: () => document.getElementById("text3").textContent = escolherFrase("text3") })
-    .to("#text3", { opacity: 0, duration: 1 })
-    .to("#text4", { opacity: 1, duration: 1, onStart: () => document.getElementById("text4").textContent = escolherFrase("text4") });
 });
 
 const frases = {
-  text1: ["arte", "criação", "crítica"],
-  text2: ["traz", "possui", "carrega"],
-  text3: ["muito", "intenso", "profundo"],
-  text4: ["desconforto", "questionamento", "desafio"]
+  text1: ["arte"],
+  text2: ["é", "significa", "precisa", "assume", "pleiteia", "deseja", "disputa", "almeja", "vislumbra" ],
+  text3: ["desconforto", "questionar", "resignificar", "reconstruir", "destruir", "significado"],
 };
 
 
