@@ -84,7 +84,7 @@ const words = {
           "dividir", "efetuar", "evidenciar", "experimentar", "explorar", "facilitar", "fomentar", "formar", "fundar", "gerar",
           "implementar", "iniciar", "instaurar", "integrar", "interagir", "interpretar", "intervir", "inverter", "justificar",
           "manter", "modificar", "mobilizar", "motivar", "narrar", "negociar", "observar", "ocasionar", "organizar", "otimizar",
-          "parar", "planear", "proporcionar", "propor", "quebrar", "reagir", "realizar", "reavaliar", "reconhecer", "regenerar",
+          "parar", "planejar", "proporcionar", "propor", "quebrar", "reagir", "realizar", "reavaliar", "reconhecer", "regenerar",
           "relatar", "remediar", "remover", "renovar", "reorganizar", "reparar", "representar", "resgatar", "resistir", "rever",
           "reverter", "revisar", "sistematizar", "transformar", "unificar", "variar", "visualizar", "avaliar", "complicar",
           "consolidar", "contrabalançar", "construir", "demarcar", "desafiar", "deslocar", "enfrentar", "esclarecer", "especificar",
