@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rua da Praia – p5.js + otimizado</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js"></script>
+</head>
+
+<body>
+  <div id="wrap"></div>
+  <script>
+    const W = 768, H = 1156;
+    let TILE_SIZE = 9, BAND = 80, WAVELEN = 210, NUM_ROWS = 8;
+    let AMP_BASE = 6, AMP_TARGET = 70;
+    let gx = (W / 4) * 3, gy = W / 4;
+    let seed = 142;
+
+    const totalFrames = 300;
+    let t = 0;
+    let speed = 1 / totalFrames;
+
+    let gridData = []; // pré-calculado
+    let bgLayer;       // buffer fixo (fundo com noise)
+
+    let guarda_sol_pos = [];
+    let color_values = [130, 150, 170, 100];
+
+    function setup() {
+      const cnv = createCanvas(W, H, P2D);
+      cnv.parent('wrap');
+      pixelDensity(1);
+      frameRate(30);
+
+      randomSeed(seed);
+      noiseSeed(seed);
+
+      let variations = [];
+
+      for (let i = 0; i < 8; i++) {
+        // copia o array original
+        let arr = color_values.slice();
+
+        // embaralha os 4 valores
+        for (let j = arr.length - 1; j > 0; j--) {
+          let k = Math.floor(Math.random() * (j + 1));
+          [arr[j], arr[k]] = [arr[k], arr[j]];
+        }
+
+        variations.push(arr);
+      }
+
+      guarda_sol_pos = [
+        [random(620, 640) - random(-50, 50), random(140, 150) - 150, random(72, 75), variations[0]],
+        [random(450, 470) - random(-50, 50), random(100, 120) - 150, random(72, 78), variations[1]],
+        [random(300, 320) - random(-50, 50), random(135, 155) - 150, random(72, 78), variations[2]],
+        [random(130, 160) - random(-50, 50), random(114, 145) - 150, random(72, 78), variations[3]],
+        [random(620, 640), random(140, 150), random(72, 75), variations[4]],
+        [random(450, 470), random(100, 120), random(72, 78), variations[5]],
+        [random(300, 320), random(135, 155), random(72, 78), variations[6]],
+        [random(130, 160), random(114, 145), random(72, 78), variations[7]],
+        [random(620, 640) - random(-50, 50), random(140, 150) + 150, random(72, 75), variations[0]],
+        [random(450, 470) - random(-50, 50), random(100, 120) + 150, random(72, 78), variations[1]],
+        [random(300, 320) - random(-50, 50), random(135, 155) + 150, random(72, 78), variations[2]],
+        [random(130, 160) - random(-50, 50), random(114, 145) + 150, random(72, 78), variations[3]]
+      ];
+
+
+      // --- Pré-calcula mosaico (pedras) ---
+      const jitter = TILE_SIZE * 0.40;
+      for (let gy = 0; gy < H + TILE_SIZE; gy += TILE_SIZE) {
+        for (let gx = 0; gx < W + TILE_SIZE; gx += TILE_SIZE) {
+          const jx = (noise(gx * 0.03, gy * 0.03, 0.1) - 0.5) * 2 * jitter;
+          const jy = (noise(gx * 0.03, gy * 0.03, 7.7) - 0.5) * 2 * jitter;
+          const x = gx + jx;
+          const y = gy + jy;
+
+          const r = random(0.45, 0.9) * TILE_SIZE;
+
+          // cor individual para cada pedra
+          const base = 220 + random(-10, 30);
+          const c = color(base);
+
+          const n = floor(random(4, 8));
+          let verts = [];
+          for (let i = 0; i < n; i++) {
+            const a = (TWO_PI * i) / n + random(-0.5, 0.15);
+            const rr = r * (0.75 + random(-0.15, 0.2));
+            verts.push([cos(a) * rr, sin(a) * rr]);
+          }
+          gridData.push({ x, y, verts, colorData: c });
+        }
+      }
+
+      // --- Cria camada fixa apenas com noise (fundo) ---
+      bgLayer = createGraphics(W, H);
+      bgLayer.pixelDensity(1);
+      bgLayer.loadPixels();
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          let idx = 4 * (x + y * W); // correto
+          let n = noise(x * 0.2, y * 0.2); // frequência suave
+          let bright = floor(n * 255); // tons de cinza
+          bgLayer.pixels[idx + 0] = bright;
+          bgLayer.pixels[idx + 1] = bright;
+          bgLayer.pixels[idx + 2] = bright;
+          bgLayer.pixels[idx + 3] = 255;
+        }
+      }
+      bgLayer.updatePixels();
+    }
+
+    function draw() {
+      t += speed;
+      if (t > 1) t -= 1;
+
+      const waveHeight = H * easeLoop(t);
+      const slabY0 = H - waveHeight;
+      const rowGap = (waveHeight > 0) ? (waveHeight / NUM_ROWS - 1) : 0;
+      const AMP = constrain(lerp(AMP_BASE, AMP_TARGET, easeLoop(t)), 0, Math.max(0, 0.6 * rowGap - BAND * 0.5));
+
+      // --- Fundo com noise ---
+      image(bgLayer, 0, 0);
+
+      // --- Pedras (mosaico) ---
+      drawMosaicWaves(AMP, rowGap, slabY0);
+
+      // --- Bueiros ---
+      drawBueiro(100, 200, 90);
+      drawBueiro(130, 620, 90);
+      drawBueiro(110, 950, 90);
+
+      drawDrain(735, 50, 40, 90, 4);
+      drawDrain(735, H/3, 40, 90, 4);
+      drawDrain(735, (H/3)*2, 40, 90, 4);
+      drawDrain(735, 1100, 40, 90, 4);
+
+      // --- Guarda-sol ---
+      for (let i = 0; i < guarda_sol_pos.length; i++) {
+        let [x, y, r, variation] = guarda_sol_pos[i];
+        guarda_sol(x, y, r, variation);
+      }
+
+    }
+
+    function drawDrain(x, y, w, h, r) {
+      stroke(0,0,0,120);
+      strokeWeight(3);
+      fill(170);
+      rect(x,y,w,h,r);
+      espacamento = 12.2;
+
+      for (i=1; i<7; i++) {
+        fill(30);
+        let a = y + (i * espacamento);
+        rect(x+5, a, 30, 4, 2);
+      }
+    }
+
+    // --- Funções auxiliares ---
+    function easeLoop(u) {
+      if (u < 0.50) { let p = u / 0.50; return easeOutQuad(p); }
+      else { let p = (u - 0.51) / 0.50; return 1 - easeInQuad(p); }
+    }
+    function easeOutQuad(x) { return 1 - (1 - x) * (1 - x); }
+    function easeInQuad(x) { return x * x; }
+
+    function inBlackBand(x, y, AMP, rowGap, slabY0) {
+      if (rowGap <= 0 || y < slabY0) return false;
+      const k = TWO_PI / WAVELEN;
+      const yy = y - slabY0;
+      const rowIndex = Math.floor(yy / rowGap);
+      const baseY = slabY0 + (rowIndex + 0.5) * rowGap;
+      const angle = k * x;
+      const s = Math.sin(angle);
+      const shaped = Math.sign(s) * Math.pow(Math.abs(s), 0.5);
+      const center = baseY + AMP * shaped;
+      const thicknessFactor = 0.4 + 0.6 * Math.abs(shaped);
+      const localBand = BAND * thicknessFactor;
+      return Math.abs(y - center) <= localBand * 0.44;
+    }
+
+    function drawMosaicWaves(AMP, rowGap, slabY0) {
+      const outerBorderWidth = 22;
+      const margin = 40;
+
+      for (let g of gridData) {
+        const { x, y, verts } = g;
+
+        let colFill, colStroke, sw;
+        let isOuterBorder = (x < outerBorderWidth + 2) || (x > W - outerBorderWidth - 2);
+        let isWaveX = (x > margin && x < W - margin - 1);
+
+        if (isOuterBorder) {
+          colFill = color(30);
+          colStroke = color(30); sw = 1;
+        } else if (y < slabY0) {
+          colFill = g.colorData;
+          colStroke = color(60); sw = 0.5;
+        } else {
+          let isBlack = isWaveX && inBlackBand(x, y, AMP, rowGap, slabY0);
+          if (isBlack) {
+            colFill = color(30);
+            colStroke = color(30); sw = 1;
+          } else {
+            colFill = g.colorData;
+            colStroke = color(60); sw = 0.5;
+          }
+        }
+
+        fill(colFill);
+        stroke(colStroke);
+        strokeWeight(sw);
+        beginShape();
+        for (let v of verts) vertex(x + v[0], y + v[1]);
+        endShape(CLOSE);
+      }
+    }
+
+    function guarda_sol(gx, gy, radius, cor) {
+      push();
+      noStroke();
+      fill(0, 0, 0, 75);
+      translate(gx, gy);
+
+      for (let a = 0; a < 1; a++) {
+        ellipse(-80, 0, radius * 3, radius * 2, 2);
+      }
+
+      stroke(110);
+      strokeWeight(0.5);
+      let segments = 16;
+      let seg_cor = 0;
+
+      for (let i = 0; i < segments; i++) {
+
+        let seg_cor = cor[i % cor.length]; // ciclo pelo array
+
+        /*
+        
+        if (i == 0 || i == 4 || i == 8 || i == 12) {seg_cor = cor[0];}
+        if (i == 1 || i == 5 || i == 9 || i == 13) {seg_cor = cor[1];}
+        if (i == 2 || i == 6 || i == 10 || i == 14) {seg_cor = cor[2];}
+        if (i == 3 || i == 7 || i == 11 || i == 15) {seg_cor = cor[3];}
+
+        */
+
+
+
+        fill(seg_cor);
+        let angle1 = (TWO_PI / segments) * i;
+        let angle2 = (TWO_PI / segments) * (i + 1);
+        beginShape();
+        vertex(0, 0);
+        vertex(cos(angle1) * radius, sin(angle1) * radius);
+        vertex(cos(angle2) * radius, sin(angle2) * radius);
+        endShape(CLOSE);
+      }
+
+
+      noStroke();
+      fill(0, 0, 0, 130);
+      for (a = 0; a < 1; a++) {
+        arc(0, 0, radius * 2, radius * 2, PI / 2, -PI / 2, PIE);
+      }
+      pop();
+    }
+
+    function drawBueiro(x, y, r) {
+      push();
+      translate(x, y);
+      noStroke();
+      fill(30, 30, 30, 5);
+      for (i = 0; i < 4; i++) {
+        ellipse(0, 0, r + (i * 4), r + (i * 4));
+      }
+
+      fill(60);
+      ellipse(0, 0, r, r);
+
+      let numSectors = 16;
+      stroke(100);
+      for (let i = 0; i < numSectors; i++) {
+        let angle = TWO_PI * i / numSectors;
+        line(0, 0, cos(angle) * r / 2, sin(angle) * r / 2);
+      }
+
+      noFill();
+      stroke(80);
+      for (let i = 1; i <= 5; i++) {
+        ellipse(0, 0, (r / 5) * i, (r / 5) * i);
+      }
+
+      let screwDist = r * 0.45;
+      let screwSize = 8;
+      fill(45);
+      noStroke();
+      ellipse(screwDist, 0, screwSize);
+      ellipse(-screwDist, 0, screwSize);
+      ellipse(0, screwDist, screwSize);
+      ellipse(0, -screwDist, screwSize);
+
+      pop();
+    }
+  </script>
+</body>
+
+</html>
